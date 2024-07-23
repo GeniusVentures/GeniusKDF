@@ -24,9 +24,9 @@ std::vector<uint8_t> KDFGenerator::GenerateKDF( const std::vector<uint8_t> &data
         }
         case HashType::KECCAK:
         {
-            //auto hash_result = nil::crypto3::hash<nil::crypto3::hashes::keccak_1600<256>>(data.begin(), data.end());
-            //std::array<uint8_t, 32> hash_array = hash_result; // Assuming KECCAK outputs 32 bytes
-            //ret_val = std::vector<std::uint8_t>(hash_array.begin(), hash_array.end());
+            auto hash_result = nil::crypto3::hash<nil::crypto3::hashes::keccak_1600<256>>(data.begin(), data.end());
+            std::array<uint8_t, 32> hash_array = hash_result; // Assuming KECCAK outputs 32 bytes
+            ret_val = std::vector<std::uint8_t>(hash_array.begin(), hash_array.end());
             break;
         }
         default:
