@@ -20,7 +20,6 @@ endif()
 
 include(cmake/functions.cmake)
 
-find_package(GTest CONFIG REQUIRED)
 find_package(Boost.DI CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS date_time filesystem random regex system thread log log_setup program_options)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -32,12 +31,17 @@ set(SUBVERSION_STRING 1)
 
 # Set source file dir
 
-option(BUILD_TESTS "Build tests" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(BUILD_APPS "Enable application targets." FALSE)
 option(BUILD_EXAMPLES "Enable demonstration targets." FALSE)
 option(BUILD_DOCS "Enable documentation targets." FALSE)
 set(DOXYGEN_OUTPUT_DIR "${CMAKE_CURRENT_LIST_DIR}/docs" CACHE STRING "Specify doxygen output directory")
+
+option(BUILD_TESTING "Build tests" ON)
+
+if(BUILD_TESTING)
+    find_package(GTest CONFIG REQUIRED)
+endif()
 
 # -----------------------------------
 # Include external plugin need
