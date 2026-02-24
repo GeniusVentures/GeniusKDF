@@ -96,18 +96,14 @@ endif()
 include(${PROJECT_ROOT}/build/cmake/functions.cmake)
 include(${PROJECT_ROOT}/cmake/functions.cmake)
 
-set(OPENSSL_DIR "${THIRDPARTY_BUILD_DIR}/openssl/build/${ABI_SUBFOLDER_NAME}" CACHE PATH "Path to OpenSSL install folder")
-set(OPENSSL_USE_STATIC_LIBS ON CACHE BOOL "OpenSSL use static libs")
-set(OPENSSL_MSVC_STATIC_RT ON CACHE BOOL "OpenSSL use static RT")
-set(OPENSSL_ROOT_DIR "${OPENSSL_DIR}" CACHE PATH "Path to OpenSSL install root folder")
-set(OPENSSL_INCLUDE_DIR "${OPENSSL_DIR}/include" CACHE PATH "Path to OpenSSL include folder")
-set(OPENSSL_INCLUDE_DIR "${OPENSSL_DIR}/include")
-set(OPENSSL_LIBRARIES "${OPENSSL_DIR}/lib" CACHE PATH "Path to OpenSSL lib folder")
-set(OPENSSL_CRYPTO_LIBRARY ${OPENSSL_LIBRARIES}/libcrypto${CMAKE_STATIC_LIBRARY_SUFFIX} CACHE PATH "Path to OpenSSL crypto lib")
-set(OPENSSL_SSL_LIBRARY ${OPENSSL_LIBRARIES}/libssl${CMAKE_STATIC_LIBRARY_SUFFIX} CACHE PATH "Path to OpenSSL ssl lib")
-message(OPENSSLINCLUDE:"${OPENSSL_INCLUDE_DIR}")
-find_package(OpenSSL REQUIRED)
-include_directories(${OPENSSL_INCLUDE_DIR})
+set(OpenSSL_DIR "${_THIRDPARTY_BUILD_DIR}/openssl/build/lib/cmake/OpenSSL" CACHE PATH "Path to OpenSSL install folder")
+set(OpenSSL_USE_STATIC_LIBS ON CACHE BOOL "OpenSSL use static libs")
+set(OpenSSL_MSVC_STATIC_RT ON CACHE BOOL "OpenSSL use static RT")
+set(OpenSSL_ROOT_DIR "${OpenSSL_DIR}" CACHE PATH "Path to OpenSSL install root folder")
+set(OpenSSL_INCLUDE_DIR "${OpenSSL_DIR}/include" CACHE PATH "Path to OpenSSL include folder")
+
+find_package(OpenSSL REQUIRED CONFIG)
+include_directories(${OpenSSLINCLUDE_DIR})
 
 # --------------------------------------------------------
 # Set config of rocksdb
