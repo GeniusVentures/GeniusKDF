@@ -103,7 +103,7 @@ set(OPENSSL_MSVC_STATIC_RT ON CACHE BOOL "OpenSSL use static RT")
 set(OPENSSL_INCLUDE_DIR "${_THIRDPARTY_BUILD_DIR}/openssl/build/include" CACHE PATH "Path to OpenSSL include folder")
 
 find_package(OpenSSL REQUIRED CONFIG)
-include_directories(${OpenSSLINCLUDE_DIR})
+include_directories(${OPENSSL_INCLUDE_DIR})
 
 # --------------------------------------------------------
 # Set config of rocksdb
