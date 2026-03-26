@@ -1,29 +1,14 @@
 # BOOST VERSION TO USE
 set(BOOST_MAJOR_VERSION "1" CACHE STRING "Boost Major Version")
-set(BOOST_MINOR_VERSION "80" CACHE STRING "Boost Minor Version")
+set(BOOST_MINOR_VERSION "85" CACHE STRING "Boost Minor Version")
 set(BOOST_PATCH_VERSION "0" CACHE STRING "Boost Patch Version")
+
 # convenience settings
 set(BOOST_VERSION "${BOOST_MAJOR_VERSION}.${BOOST_MINOR_VERSION}.${BOOST_PATCH_VERSION}")
 set(BOOST_VERSION_3U "${BOOST_MAJOR_VERSION}_${BOOST_MINOR_VERSION}_${BOOST_PATCH_VERSION}")
 set(BOOST_VERSION_2U "${BOOST_MAJOR_VERSION}_${BOOST_MINOR_VERSION}")
 
-# --------------------------------------------------------
-# define third party directory
-#if (NOT DEFINED THIRDPARTY_DIR)
-#  print("Setting default third party directory")
-#  set(THIRDPARTY_DIR "${CMAKE_CURRENT_LIST_DIR}/../../thirdparty")
-#  ## get absolute path
-#  cmake_path(SET THIRDPARTY_DIR NORMALIZE "${THIRDPARTY_DIR}")
-#endif()
-#
-#if (NOT DEFINED THIRDPARTY_BUILD_DIR)
-#  print("Setting third party build directory default")
-#  set(THIRDPARTY_BUILD_DIR "${THIRDPARTY_DIR}/build/${CMAKE_SYSTEM_NAME}/${CMAKE_BUILD_TYPE}")
-#endif()
-#
-#print("THIRDPARTY BUILD DIR: ${THIRDPARTY_BUILD_DIR}")
-#print("THIRDPARTY SRC DIR: ${THIRDPARTY_DIR}")
-
+add_definitions(-D_USE_INSTALLED_BOOST_JSON_=TRUE)
 # --------------------------------------------------------
 # Set config of GTest
 set(GTest_DIR "${THIRDPARTY_BUILD_DIR}/GTest/lib/cmake/GTest")
@@ -59,43 +44,6 @@ set(yaml-cpp_INCLUDE_DIR "${THIRDPARTY_BUILD_DIR}/yaml-cpp/include")
 find_package(yaml-cpp CONFIG REQUIRED)
 include_directories(${yaml-cpp_INCLUDE_DIR})
 
-# --------------------------------------------------------
-# Set config of protobuf project
-if (NOT DEFINED Protobuf_DIR)
-    set(Protobuf_DIR "${_THIRDPARTY_BUILD_DIR}/grpc/lib/cmake/protobuf")
-endif()
-if (NOT DEFINED grpc_INCLUDE_DIR)
-    set(grpc_INCLUDE_DIR "${_THIRDPARTY_BUILD_DIR}/grpc/include")
-endif()
-if (NOT DEFINED Protobuf_INCLUDE_DIR)
-    set(Protobuf_INCLUDE_DIR "${grpc_INCLUDE_DIR}/google/protobuf")
-endif()
-
-find_package(Protobuf CONFIG REQUIRED )
-
-if (NOT DEFINED PROTOC_EXECUTABLE)
-  set(PROTOC_EXECUTABLE "${THIRDPARTY_BUILD_DIR}/grpc/bin/protoc${CMAKE_EXECUTABLE_SUFFIX}")
-endif()
-
-set(Protobuf_PROTOC_EXECUTABLE ${PROTOC_EXECUTABLE} CACHE PATH "Initial cache" FORCE)
-if(NOT TARGET protobuf::protoc)
-  add_executable(protobuf::protoc IMPORTED)
-endif()
-if(EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
-  set_target_properties(protobuf::protoc PROPERTIES
-          IMPORTED_LOCATION ${Protobuf_PROTOC_EXECUTABLE})
-endif()
-
-# protoc definition #####################################################################################
-get_target_property(PROTOC_LOCATION protobuf::protoc IMPORTED_LOCATION)
-print("PROTOC_LOCATION: ${PROTOC_LOCATION}")
-if ( Protobuf_FOUND )
-  message( STATUS "Protobuf version : ${Protobuf_VERSION}" )
-  message( STATUS "Protobuf compiler : ${Protobuf_PROTOC_EXECUTABLE}")
-endif()
-include(${PROJECT_ROOT}/build/cmake/functions.cmake)
-include(${PROJECT_ROOT}/cmake/functions.cmake)
-
 set(OpenSSL_DIR "${_THIRDPARTY_BUILD_DIR}/openssl/build/lib/cmake/OpenSSL" CACHE PATH "Path to OpenSSL install folder")
 set(OPENSSL_ROOT_DIR "${_THIRDPARTY_BUILD_DIR}/openssl/build" CACHE PATH "Path to OpenSSL install root folder")
 set(OPENSSL_USE_STATIC_LIBS ON CACHE BOOL "OpenSSL use static libs")
@@ -104,13 +52,6 @@ set(OPENSSL_INCLUDE_DIR "${_THIRDPARTY_BUILD_DIR}/openssl/build/include" CACHE P
 
 find_package(OpenSSL REQUIRED CONFIG)
 include_directories(${OPENSSL_INCLUDE_DIR})
-
-# --------------------------------------------------------
-# Set config of rocksdb
-set(RocksDB_DIR "${THIRDPARTY_BUILD_DIR}/rocksdb/lib/cmake/rocksdb")
-set(RocksDB_INCLUDE_DIR "${THIRDPARTY_BUILD_DIR}/rocksdb/include")
-find_package(RocksDB CONFIG REQUIRED)
-include_directories(${RocksDB_INCLUDE_DIR})
 
 # --------------------------------------------------------
 # Set config of stb
@@ -166,28 +107,57 @@ include_directories(${Boost.DI_INCLUDE_DIR})
 
 
 # Boost should be loaded before libp2p v0.1.2
-# --------------------------------------------------------
-# Set config of Boost project
-set(_BOOST_ROOT "${THIRDPARTY_BUILD_DIR}/boost/build/${CMAKE_SYSTEM_NAME}${ABI_SUBFOLDER_NAME}")
+# Boost project
+set(_BOOST_ROOT "${_THIRDPARTY_BUILD_DIR}/boost/build")
 set(Boost_LIB_DIR "${_BOOST_ROOT}/lib")
 set(Boost_INCLUDE_DIR "${_BOOST_ROOT}/include/boost-${BOOST_VERSION_2U}")
 set(Boost_DIR "${Boost_LIB_DIR}/cmake/Boost-${BOOST_VERSION}")
-set(boost_headers_DIR "${Boost_LIB_DIR}/cmake/boost_headers-${BOOST_VERSION}")
-set(boost_random_DIR "${Boost_LIB_DIR}/cmake/boost_random-${BOOST_VERSION}")
-set(boost_system_DIR "${Boost_LIB_DIR}/cmake/boost_system-${BOOST_VERSION}")
-set(boost_filesystem_DIR "${Boost_LIB_DIR}/cmake/boost_filesystem-${BOOST_VERSION}")
-set(boost_program_options_DIR "${Boost_LIB_DIR}/cmake/boost_program_options-${BOOST_VERSION}")
-set(boost_date_time_DIR "${Boost_LIB_DIR}/cmake/boost_date_time-${BOOST_VERSION}")
-set(boost_regex_DIR "${Boost_LIB_DIR}/cmake/boost_regex-${BOOST_VERSION}")
 set(boost_atomic_DIR "${Boost_LIB_DIR}/cmake/boost_atomic-${BOOST_VERSION}")
 set(boost_chrono_DIR "${Boost_LIB_DIR}/cmake/boost_chrono-${BOOST_VERSION}")
+set(boost_container_DIR "${Boost_LIB_DIR}/cmake/boost_container-${BOOST_VERSION}")
+set(boost_context_DIR "${Boost_LIB_DIR}/cmake/boost_context-${BOOST_VERSION}")
+set(boost_date_time_DIR "${Boost_LIB_DIR}/cmake/boost_date_time-${BOOST_VERSION}")
+set(boost_filesystem_DIR "${Boost_LIB_DIR}/cmake/boost_filesystem-${BOOST_VERSION}")
+set(boost_headers_DIR "${Boost_LIB_DIR}/cmake/boost_headers-${BOOST_VERSION}")
+set(boost_json_DIR "${Boost_LIB_DIR}/cmake/boost_json-${BOOST_VERSION}")
 set(boost_log_DIR "${Boost_LIB_DIR}/cmake/boost_log-${BOOST_VERSION}")
 set(boost_log_setup_DIR "${Boost_LIB_DIR}/cmake/boost_log_setup-${BOOST_VERSION}")
+set(boost_program_options_DIR "${Boost_LIB_DIR}/cmake/boost_program_options-${BOOST_VERSION}")
+set(boost_random_DIR "${Boost_LIB_DIR}/cmake/boost_random-${BOOST_VERSION}")
+set(boost_regex_DIR "${Boost_LIB_DIR}/cmake/boost_regex-${BOOST_VERSION}")
+set(boost_system_DIR "${Boost_LIB_DIR}/cmake/boost_system-${BOOST_VERSION}")
 set(boost_thread_DIR "${Boost_LIB_DIR}/cmake/boost_thread-${BOOST_VERSION}")
+set(boost_context_DIR "${Boost_LIB_DIR}/cmake/boost_context-${BOOST_VERSION}")
+set(boost_coroutine_DIR "${Boost_LIB_DIR}/cmake/boost_coroutine-${BOOST_VERSION}")
+set(boost_unit_test_framework_DIR "${Boost_LIB_DIR}/cmake/boost_unit_test_framework-${BOOST_VERSION}")
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_NO_SYSTEM_PATHS ON)
 option(Boost_USE_STATIC_RUNTIME "Use static runtimes" ON)
+set(_BOOST_CACHE_ARGS
+        -DBOOST_ROOT:PATH=${_BOOST_ROOT}
+        -DBoost_DIR:PATH=${Boost_DIR}/Boost-${BOOST_VERSION}
+        -DBoost_INCLUDE_DIR:PATH=${Boost_INCLUDE_DIR}
+        -Dboost_headers_DIR:PATH=${Boost_DIR}/boost_headers-${BOOST_VERSION}
+        -Dboost_date_time_DIR:PATH=${Boost_DIR}/boost_date_time-${BOOST_VERSION}
+        -Dboost_filesystem_DIR:PATH=${Boost_DIR}/boost_filesystem-${BOOST_VERSION}
+        -Dboost_program_options_DIR:PATH=${Boost_DIR}/boost_program_options-${BOOST_VERSION}
+        -Dboost_random_DIR:PATH=${Boost_DIR}/boost_random-${BOOST_VERSION}
+        -Dboost_regex_DIR:PATH=${Boost_DIR}/boost_regex-${BOOST_VERSION}
+        -Dboost_system_DIR:PATH=${Boost_DIR}/boost_system-${BOOST_VERSION}
+        -Dboost_context_DIR:PATH=${Boost_DIR}/boost_context-${BOOST_VERSION}
+        -Dboost_coroutine_DIR:PATH=${Boost_DIR}/boost_coroutine-${BOOST_VERSION}
+        -Dboost_thread_DIR:PATH=${Boost_DIR}/boost_thread-${BOOST_VERSION}
+        -Dboost_log_DIR:PATH=${Boost_DIR}/boost_log-${BOOST_VERSION}
+        -Dboost_log_setup_DIR:PATH=${Boost_DIR}/boost_log_setup-${BOOST_VERSION}
+        -Dboost_unit_test_framework_DIR:PATH=${Boost_DIR}/boost_unit_test_framework-${BOOST_VERSION}
+        -Dboost_json_DIR:PATH=${Boost_DIR}/boost_json-${BOOST_VERSION}
+        -DBoost_USE_STATIC_RUNTIME:BOOL=ON
+        -DBoost_NO_SYSTEM_PATHS:BOOL=ON
+        -DBoost_USE_MULTITHREADED:BOOL=ON
+        -DBoost_USE_STATIC_LIBS:BOOL=ON
+        -DBoost_USE_STATIC_RUNTIME:BOOL=ON
+)
 
 
 option (SGNS_STACKTRACE_BACKTRACE "Use BOOST_STACKTRACE_USE_BACKTRACE in stacktraces, for POSIX" OFF)
@@ -198,9 +168,12 @@ if (SGNS_STACKTRACE_BACKTRACE)
   endif()
 endif ()
 
-# header only libraries must not be added here
-find_package(Boost REQUIRED COMPONENTS date_time filesystem random regex system thread log log_setup program_options)
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 OLD)
+endif()
+find_package(Boost REQUIRED COMPONENTS container date_time filesystem random regex system thread log log_setup program_options unit_test_framework json context coroutine)
 include_directories(${Boost_INCLUDE_DIRS})
+
 
 # --------------------------------------------------------
 # Set config of SQLiteModernCpp project

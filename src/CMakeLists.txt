@@ -2,7 +2,6 @@
 add_library(GeniusKDF STATIC
 KDFGenerator/KDFGenerator.cpp)
 
-set_target_properties(GeniusKDF PROPERTIES PUBLIC_HEADER "KDFGenerator/KDFGenerator.hpp")
 target_link_libraries(GeniusKDF PUBLIC
     Boost::boost
 )
